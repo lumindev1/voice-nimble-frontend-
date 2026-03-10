@@ -5,7 +5,9 @@
       "Read(//Users/luminouslabs/.claude/projects/**)",
       "Read(//Users/luminouslabs/Desktop/project/**)",
       "Read(//api/**)",
-      "Bash(git add .claude/ .env.example .gitignore Dockerfile index.html nginx.conf package-lock.json package.json src/ tsconfig.json tsconfig.node.json vite.config.ts)"
+      "Bash(git add .claude/ .env.example .gitignore Dockerfile index.html nginx.conf package-lock.json package.json src/ tsconfig.json tsconfig.node.json vite.config.ts)",
+      "Read(//Users/luminouslabs/.ssh/**)",
+      "Bash(ssh -T git@github.com)"
     ]
   }
 }
