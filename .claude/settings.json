@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/luminouslabs/Desktop/project/voice-nimble/**)",
+      "Read(//Users/luminouslabs/.claude/projects/**)",
+      "Read(//Users/luminouslabs/Desktop/project/**)",
+      "Read(//api/**)",
+      "Bash(git add .claude/ .env.example .gitignore Dockerfile index.html nginx.conf package-lock.json package.json src/ tsconfig.json tsconfig.node.json vite.config.ts)"
+    ]
+  }
+}
