@@ -3,6 +3,7 @@ import { apiClient } from './client';
 export interface Call {
   _id: string;
   callSid: string;
+  direction: 'inbound' | 'outbound';
   status: string;
   callerNumber: string;
   calledNumber: string;

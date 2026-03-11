@@ -38,11 +38,19 @@ function StatusBadge({ status }: { status: string }) {
   const toneMap: Record<string, 'success' | 'critical' | 'info' | 'warning'> = {
     completed: 'success',
     failed: 'critical',
-    'in-progress': 'info',
+    busy: 'critical',
+    canceled: 'critical',
     'no-answer': 'warning',
+    'in-progress': 'info',
     transferred: 'info',
   };
-  return <Badge tone={toneMap[status] || 'info'}>{status}</Badge>;
+  const labelMap: Record<string, string> = {
+    busy: 'Declined',
+    canceled: 'Canceled',
+    'no-answer': 'No Answer',
+    'in-progress': 'In Progress',
+  };
+  return <Badge tone={toneMap[status] || 'info'}>{labelMap[status] || status}</Badge>;
 }
 
 export default function CallsPage() {
@@ -83,7 +91,9 @@ export default function CallsPage() {
 
   const rows = calls.map((call) => [
     dayjs(call.createdAt).format('MMM D, YYYY h:mm A'),
-    call.callerNumber,
+    call.direction === 'outbound'
+      ? `📤 ${call.calledNumber}`
+      : `📥 ${call.callerNumber}`,
     <StatusBadge key={call._id} status={call.status} />,
     formatDuration(call.duration),
     <SentimentBadge key={`${call._id}-s`} sentiment={call.sentiment} />,
@@ -117,7 +127,9 @@ export default function CallsPage() {
                 { label: 'All calls', value: '' },
                 { label: 'Completed', value: 'completed' },
                 { label: 'Failed', value: 'failed' },
+                { label: 'Declined (Busy)', value: 'busy' },
                 { label: 'No Answer', value: 'no-answer' },
+                { label: 'Canceled', value: 'canceled' },
                 { label: 'Transferred', value: 'transferred' },
                 { label: 'In Progress', value: 'in-progress' },
               ]}
@@ -138,7 +150,7 @@ export default function CallsPage() {
           ) : (
             <DataTable
               columnContentTypes={['text', 'text', 'text', 'text', 'text', 'text', 'text']}
-              headings={['Date', 'Caller', 'Status', 'Duration', 'Sentiment', 'Intent', 'Actions']}
+              headings={['Date', 'Number', 'Status', 'Duration', 'Sentiment', 'Intent', 'Actions']}
               rows={rows}
             />
           )}
@@ -159,7 +171,7 @@ export default function CallsPage() {
       <Modal
         open={!!selectedCall}
         onClose={() => { setSelectedCall(null); setTranscript(null); }}
-        title={`Call from ${selectedCall?.callerNumber}`}
+        title={selectedCall?.direction === 'outbound' ? `Outbound call to ${selectedCall?.calledNumber}` : `Inbound call from ${selectedCall?.callerNumber}`}
         size="large"
       >
         <Modal.Section>
