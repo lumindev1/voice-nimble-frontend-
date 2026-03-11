@@ -95,6 +95,12 @@ export default function AppLayout({ children }: AppLayoutProps) {
         title="Settings"
         items={[
           {
+            label: 'SIP Trunks',
+            icon: PhoneIcon,
+            selected: isSelected('/sip-trunks'),
+            onClick: () => navigate('/sip-trunks'),
+          },
+          {
             label: 'Analytics',
             icon: ChartVerticalIcon,
             selected: isSelected('/analytics'),

@@ -15,7 +15,6 @@ import {
   Badge,
   DataTable,
   SkeletonBodyText,
-  Divider,
 } from '@shopify/polaris';
 import { eventDrivenApi, EventDrivenConfig, TriggerEvent } from '../api/event-driven.api';
 import { templatesApi, CallTemplate } from '../api/templates.api';
@@ -45,7 +44,6 @@ export default function EventDrivenCallPage() {
     triggerEvent: 'order_placed' as TriggerEvent,
     templateId: '',
     agentId: '',
-    fromNumber: '',
   });
 
   const load = useCallback(async () => {
@@ -69,7 +67,7 @@ export default function EventDrivenCallPage() {
 
   const openCreate = () => {
     setEditingConfig(null);
-    setForm({ name: '', triggerEvent: 'order_placed', templateId: '', agentId: '', fromNumber: '' });
+    setForm({ name: '', triggerEvent: 'order_placed', templateId: '', agentId: '' });
     setShowModal(true);
   };
 
@@ -82,7 +80,6 @@ export default function EventDrivenCallPage() {
       triggerEvent: c.triggerEvent,
       templateId: tId,
       agentId: aId,
-      fromNumber: c.fromNumber || '',
     });
     setShowModal(true);
   };
@@ -100,7 +97,6 @@ export default function EventDrivenCallPage() {
         triggerEvent: form.triggerEvent,
         templateId: form.templateId,
         agentId: form.agentId || undefined,
-        fromNumber: form.fromNumber || undefined,
       };
       if (editingConfig) {
         await eventDrivenApi.update(editingConfig._id, payload);
@@ -224,15 +220,6 @@ export default function EventDrivenCallPage() {
               options={[{ label: 'No Agent', value: '' }, ...agents.map((a) => ({ label: `${a.agentName} (${a.callType})`, value: a._id }))]}
               value={form.agentId}
               onChange={(v) => setForm({ ...form, agentId: v })}
-            />
-            <Divider />
-            <TextField
-              label="From Number (optional)"
-              value={form.fromNumber}
-              onChange={(v) => setForm({ ...form, fromNumber: v })}
-              autoComplete="tel"
-              placeholder="+8809649364251"
-              helpText="Leave empty to use the agent's default number"
             />
           </FormLayout>
         </Modal.Section>

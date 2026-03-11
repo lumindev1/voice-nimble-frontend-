@@ -19,6 +19,7 @@ import KnowledgeBasePage from './pages/KnowledgeBasePage';
 import BroadcastCallsPage from './pages/BroadcastCallsPage';
 import EventDrivenCallPage from './pages/EventDrivenCallPage';
 import TestCallPage from './pages/TestCallPage';
+import SipTrunkPage from './pages/SipTrunkPage';
 import LoadingScreen from './components/LoadingScreen';
 
 function getShopifyConfig() {
@@ -72,6 +73,7 @@ function AuthenticatedRoutes() {
         <Route path="/call-history" element={<CallsPage />} />
 
         {/* Settings */}
+        <Route path="/sip-trunks" element={<SipTrunkPage />} />
         <Route path="/analytics" element={<AnalyticsPage />} />
         <Route path="/skills" element={<SkillsPage />} />
         <Route path="/billing" element={<BillingPage />} />
