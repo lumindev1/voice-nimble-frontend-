@@ -10,8 +10,8 @@ import {
   TextField,
   Select,
   Toast,
-  Banner,
   Divider,
+  Badge,
 } from '@shopify/polaris';
 import { apiClient } from '../api/client';
 import { templatesApi, CallTemplate } from '../api/templates.api';
@@ -67,29 +67,45 @@ export default function TestCallPage() {
   };
 
   return (
-    <Page title="Test Call" subtitle="Perform test calls to ensure quality and system setup">
+    <Page title="Test Call" subtitle="Verify your AI agent setup with a test call">
       <Layout>
-        {/* Call form */}
         <Layout.Section variant="oneHalf">
           <Card>
-            <BlockStack gap="400">
-              <Text as="h2" variant="headingMd">Calls Management</Text>
-              <Text as="h3" variant="headingSm" tone="subdued">Initiate Call</Text>
+            <BlockStack gap="500">
+              <InlineStack gap="200" blockAlign="center">
+                <div style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 10,
+                  background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 20,
+                }}>
+                  📞
+                </div>
+                <BlockStack gap="050">
+                  <Text as="h2" variant="headingMd" fontWeight="semibold">Make a Call</Text>
+                  <Text as="p" variant="bodySm" tone="subdued">Fill in the details to initiate a test</Text>
+                </BlockStack>
+              </InlineStack>
+
               <Divider />
 
               <TextField
-                label="Recipient Number *"
+                label="Recipient Number"
                 value={form.to}
                 onChange={(v) => setForm({ ...form, to: v })}
-                placeholder="Enter recipient's number"
+                placeholder="+1234567890"
                 autoComplete="tel"
-                helpText="Include country code, e.g. +8801234567890"
+                helpText="Include country code"
               />
 
               <Select
-                label="From Number *"
+                label="From Number"
                 options={[
-                  { label: 'Select From Number', value: '' },
+                  { label: 'Select a number', value: '' },
                   ...fromNumbers.map((n) => ({ label: n, value: n })),
                 ]}
                 value={form.fromNumber}
@@ -97,9 +113,9 @@ export default function TestCallPage() {
               />
 
               <Select
-                label="Template"
+                label="Template (optional)"
                 options={[
-                  { label: 'Select Template', value: '' },
+                  { label: 'No template', value: '' },
                   ...templates.map((t) => ({ label: t.name, value: t._id })),
                 ]}
                 value={form.templateId}
@@ -109,7 +125,7 @@ export default function TestCallPage() {
               <Select
                 label="Virtual Agent"
                 options={[
-                  { label: 'Select Assistant', value: '' },
+                  { label: 'Select an agent', value: '' },
                   ...agents.map((a) => ({
                     label: `${a.agentName} (${a.callType.toUpperCase()})`,
                     value: a._id,
@@ -119,64 +135,149 @@ export default function TestCallPage() {
                 onChange={(v) => setForm({ ...form, agentId: v })}
               />
 
-              <Button variant="primary" onClick={handleCall} loading={isCalling} fullWidth>
+              <Button
+                variant="primary"
+                onClick={handleCall}
+                loading={isCalling}
+                fullWidth
+                size="large"
+              >
                 Make Call
               </Button>
             </BlockStack>
           </Card>
         </Layout.Section>
 
-        {/* Active call status */}
         <Layout.Section variant="oneHalf">
-          <Card>
-            <BlockStack gap="400">
-              <Text as="h2" variant="headingMd">Call Status</Text>
-              <Divider />
+          <BlockStack gap="400">
+            <Card>
+              <BlockStack gap="400">
+                <Text as="h2" variant="headingMd" fontWeight="semibold">Call Status</Text>
+                <Divider />
 
-              {!activeCallSid && !isCalling ? (
-                <BlockStack gap="400" align="center">
-                  <div style={{ textAlign: 'center', padding: '40px 0' }}>
-                    <div style={{ fontSize: 48, marginBottom: 12 }}>📞</div>
-                    <Text as="p" variant="bodyMd" tone="subdued">No active call</Text>
+                {!activeCallSid && !isCalling ? (
+                  <div style={{
+                    textAlign: 'center',
+                    padding: '48px 20px',
+                    background: '#f9fafb',
+                    borderRadius: 12,
+                  }}>
+                    <div style={{
+                      width: 72,
+                      height: 72,
+                      borderRadius: '50%',
+                      background: '#eef2ff',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: 32,
+                      margin: '0 auto 16px',
+                    }}>
+                      📞
+                    </div>
+                    <Text as="p" variant="bodyMd" fontWeight="medium">Ready to call</Text>
                     <Text as="p" variant="bodySm" tone="subdued">
-                      Fill in the form and click Make Call to initiate a test call.
+                      Fill in the form and click Make Call
                     </Text>
                   </div>
-                </BlockStack>
-              ) : isCalling ? (
-                <BlockStack gap="300" align="center">
-                  <div style={{ textAlign: 'center', padding: '40px 0' }}>
-                    <div style={{ fontSize: 48, marginBottom: 12, animation: 'pulse 1s infinite' }}>📱</div>
-                    <Text as="p" variant="bodyMd">Initiating call to {form.to}...</Text>
+                ) : isCalling ? (
+                  <div style={{
+                    textAlign: 'center',
+                    padding: '48px 20px',
+                    background: '#eef2ff',
+                    borderRadius: 12,
+                  }}>
+                    <div style={{
+                      width: 72,
+                      height: 72,
+                      borderRadius: '50%',
+                      background: '#6366f1',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: 32,
+                      margin: '0 auto 16px',
+                      animation: 'pulse 1.5s infinite',
+                    }}>
+                      📱
+                    </div>
+                    <Text as="p" variant="bodyMd" fontWeight="medium">Calling {form.to}...</Text>
+                    <Text as="p" variant="bodySm" tone="subdued">Please wait</Text>
                   </div>
-                </BlockStack>
-              ) : (
-                <Banner tone="success" title="Call initiated">
-                  <BlockStack gap="200">
-                    <Text as="p" variant="bodySm">Call SID: <strong>{activeCallSid}</strong></Text>
-                    <Text as="p" variant="bodySm">The call has been placed to <strong>{form.to}</strong>.</Text>
-                    <Text as="p" variant="bodySm" tone="subdued">
-                      Check the Call History page to see the call status and transcript.
-                    </Text>
-                  </BlockStack>
-                </Banner>
-              )}
-            </BlockStack>
-          </Card>
-
-          {/* Tips */}
-          <Card>
-            <BlockStack gap="300">
-              <Text as="h3" variant="headingSm">Tips</Text>
-              <Divider />
-              <BlockStack gap="200">
-                <Text as="p" variant="bodySm">• Make sure your virtual agent is <strong>activated</strong> before making a test call.</Text>
-                <Text as="p" variant="bodySm">• Selecting a template will use that script during the call.</Text>
-                <Text as="p" variant="bodySm">• The from number must be provisioned in your Jambonz account.</Text>
-                <Text as="p" variant="bodySm">• Test calls are logged in the <strong>Call History</strong> page.</Text>
+                ) : (
+                  <div style={{
+                    background: '#ecfdf5',
+                    borderRadius: 12,
+                    padding: '24px',
+                  }}>
+                    <BlockStack gap="300">
+                      <InlineStack gap="200" blockAlign="center">
+                        <div style={{
+                          width: 32,
+                          height: 32,
+                          borderRadius: '50%',
+                          background: '#059669',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: '#fff',
+                          fontSize: 16,
+                        }}>
+                          ✓
+                        </div>
+                        <Text as="p" variant="headingSm" fontWeight="bold">Call Initiated</Text>
+                      </InlineStack>
+                      <BlockStack gap="100">
+                        <Text as="p" variant="bodySm">
+                          <span style={{ color: '#6b7280' }}>To:</span> <strong>{form.to}</strong>
+                        </Text>
+                        <Text as="p" variant="bodySm">
+                          <span style={{ color: '#6b7280' }}>Call SID:</span>{' '}
+                          <span style={{ fontFamily: 'monospace', fontSize: 11 }}>{activeCallSid}</span>
+                        </Text>
+                      </BlockStack>
+                      <Badge tone="info">Check Call History for details</Badge>
+                    </BlockStack>
+                  </div>
+                )}
               </BlockStack>
-            </BlockStack>
-          </Card>
+            </Card>
+
+            <Card>
+              <BlockStack gap="300">
+                <Text as="h3" variant="headingSm" fontWeight="semibold">Quick Tips</Text>
+                <Divider />
+                <BlockStack gap="200">
+                  {[
+                    'Make sure your virtual agent is activated before calling',
+                    'Selecting a template will use that script during the call',
+                    'The from number must be provisioned in your SIP trunk',
+                    'Test calls are logged in the Call History page',
+                  ].map((tip, i) => (
+                    <InlineStack key={i} gap="200" blockAlign="start">
+                      <div style={{
+                        width: 20,
+                        height: 20,
+                        borderRadius: '50%',
+                        background: '#eef2ff',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: 10,
+                        color: '#6366f1',
+                        fontWeight: 700,
+                        flexShrink: 0,
+                        marginTop: 1,
+                      }}>
+                        {i + 1}
+                      </div>
+                      <Text as="p" variant="bodySm" tone="subdued">{tip}</Text>
+                    </InlineStack>
+                  ))}
+                </BlockStack>
+              </BlockStack>
+            </Card>
+          </BlockStack>
         </Layout.Section>
       </Layout>
 

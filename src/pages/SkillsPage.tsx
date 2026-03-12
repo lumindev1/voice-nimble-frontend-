@@ -24,6 +24,17 @@ const SKILL_DESCRIPTIONS: Record<string, string> = {
   place_order: 'Guide customers through placing orders over the phone, creating draft orders in Shopify for your review.',
 };
 
+const SKILL_ICONS: Record<string, string> = {
+  order_status: '📦',
+  product_browsing: '🛍',
+  policies_info: '📜',
+  refund_request: '💰',
+  exchange_request: '🔄',
+  modify_shipping: '🚚',
+  cancel_order: '❌',
+  place_order: '🛒',
+};
+
 const SKILL_CATEGORIES = {
   default: ['order_status', 'product_browsing', 'policies_info'],
   advanced: ['refund_request', 'exchange_request', 'modify_shipping', 'cancel_order', 'place_order'],
@@ -53,96 +64,101 @@ export default function SkillsPage() {
 
   if (isLoading) return <Page title="Agent Skills"><Card><Text as="p">Loading...</Text></Card></Page>;
 
+  const renderSkillItem = (skillId: string) => {
+    const skill = getSkill(skillId);
+    if (!skill) return null;
+    return (
+      <div key={skillId} style={{
+        padding: '16px',
+        borderRadius: 12,
+        border: '1px solid #e5e7eb',
+        background: skill.isEnabled ? '#f0fdf4' : '#fff',
+        transition: 'all 0.2s',
+      }}>
+        <InlineStack align="space-between" blockAlign="start">
+          <InlineStack gap="300" blockAlign="start">
+            <div style={{
+              width: 40,
+              height: 40,
+              borderRadius: 10,
+              background: skill.isEnabled ? '#dcfce7' : '#f3f4f6',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 20,
+              flexShrink: 0,
+            }}>
+              {SKILL_ICONS[skillId] || '⚙'}
+            </div>
+            <BlockStack gap="100">
+              <InlineStack gap="200" blockAlign="center">
+                <Text as="p" variant="bodyMd" fontWeight="semibold">{skill.name}</Text>
+                {skill.isEnabled && <Badge tone="success">Active</Badge>}
+              </InlineStack>
+              <Text as="p" variant="bodySm" tone="subdued">
+                {SKILL_DESCRIPTIONS[skillId]}
+              </Text>
+            </BlockStack>
+          </InlineStack>
+          <Button
+            onClick={() => handleToggle(skillId)}
+            tone={skill.isEnabled ? 'critical' : undefined}
+            variant={skill.isEnabled ? 'secondary' : 'primary'}
+            size="slim"
+          >
+            {skill.isEnabled ? 'Disable' : 'Enable'}
+          </Button>
+        </InlineStack>
+      </div>
+    );
+  };
+
   return (
-    <Page title="Agent Skills" subtitle="Control what your AI phone agent can help customers with">
-        <BlockStack gap="500">
-          <Banner title="Important" tone="info">
-            <p>
-              The AI agent will <strong>never</strong> automatically modify your Shopify store data.
-              For advanced skills, it collects information and sends you email notifications for manual processing.
-            </p>
-          </Banner>
+    <Page title="Agent Skills" subtitle="Control what your AI phone agent can do">
+      <BlockStack gap="500">
+        <Banner title="Safe by Design" tone="info">
+          <p>
+            Your AI agent will <strong>never</strong> automatically modify your Shopify store.
+            Advanced skills collect information and notify you for manual processing.
+          </p>
+        </Banner>
 
-          {/* Default Skills */}
-          <Card>
-            <BlockStack gap="400">
-              <InlineStack align="space-between">
-                <Text as="h2" variant="headingMd">Default Skills</Text>
-                <Badge tone="success">Always Recommended</Badge>
-              </InlineStack>
-              <Divider />
-              {SKILL_CATEGORIES.default.map((skillId) => {
-                const skill = getSkill(skillId);
-                if (!skill) return null;
-                return (
-                  <div key={skillId}>
-                    <InlineStack align="space-between">
-                      <BlockStack gap="100">
-                        <InlineStack gap="200">
-                          <Text as="p" variant="bodyMd" fontWeight="semibold">{skill.name}</Text>
-                          {skill.isEnabled ? <Badge tone="success">Enabled</Badge> : <Badge>Disabled</Badge>}
-                        </InlineStack>
-                        <Text as="p" variant="bodySm" tone="subdued">
-                          {SKILL_DESCRIPTIONS[skillId]}
-                        </Text>
-                      </BlockStack>
-                      <Button
-                        onClick={() => handleToggle(skillId)}
-                        tone={skill.isEnabled ? 'critical' : undefined}
-                        variant={skill.isEnabled ? 'secondary' : 'primary'}
-                      >
-                        {skill.isEnabled ? 'Disable' : 'Enable'}
-                      </Button>
-                    </InlineStack>
-                    <Divider />
-                  </div>
-                );
-              })}
+        <Card>
+          <BlockStack gap="400">
+            <InlineStack align="space-between" blockAlign="center">
+              <BlockStack gap="050">
+                <Text as="h2" variant="headingMd" fontWeight="semibold">Core Skills</Text>
+                <Text as="p" variant="bodySm" tone="subdued">Essential capabilities for customer service</Text>
+              </BlockStack>
+              <Badge tone="success">Recommended</Badge>
+            </InlineStack>
+            <Divider />
+            <BlockStack gap="300">
+              {SKILL_CATEGORIES.default.map(renderSkillItem)}
             </BlockStack>
-          </Card>
+          </BlockStack>
+        </Card>
 
-          {/* Advanced Skills */}
-          <Card>
-            <BlockStack gap="400">
-              <InlineStack align="space-between">
-                <Text as="h2" variant="headingMd">Advanced Skills</Text>
-                <Badge tone="attention">Notification Only — No Auto-Modifications</Badge>
-              </InlineStack>
-              <Divider />
-              {SKILL_CATEGORIES.advanced.map((skillId) => {
-                const skill = getSkill(skillId);
-                if (!skill) return null;
-                return (
-                  <div key={skillId}>
-                    <InlineStack align="space-between">
-                      <BlockStack gap="100">
-                        <InlineStack gap="200">
-                          <Text as="p" variant="bodyMd" fontWeight="semibold">{skill.name}</Text>
-                          {skill.isEnabled ? <Badge tone="success">Enabled</Badge> : <Badge>Disabled</Badge>}
-                        </InlineStack>
-                        <Text as="p" variant="bodySm" tone="subdued">
-                          {SKILL_DESCRIPTIONS[skillId]}
-                        </Text>
-                      </BlockStack>
-                      <Button
-                        onClick={() => handleToggle(skillId)}
-                        tone={skill.isEnabled ? 'critical' : undefined}
-                        variant={skill.isEnabled ? 'secondary' : 'primary'}
-                      >
-                        {skill.isEnabled ? 'Disable' : 'Enable'}
-                      </Button>
-                    </InlineStack>
-                    <Divider />
-                  </div>
-                );
-              })}
+        <Card>
+          <BlockStack gap="400">
+            <InlineStack align="space-between" blockAlign="center">
+              <BlockStack gap="050">
+                <Text as="h2" variant="headingMd" fontWeight="semibold">Advanced Skills</Text>
+                <Text as="p" variant="bodySm" tone="subdued">Extended capabilities with notification-only processing</Text>
+              </BlockStack>
+              <Badge tone="attention">Notification Only</Badge>
+            </InlineStack>
+            <Divider />
+            <BlockStack gap="300">
+              {SKILL_CATEGORIES.advanced.map(renderSkillItem)}
             </BlockStack>
-          </Card>
-        </BlockStack>
+          </BlockStack>
+        </Card>
+      </BlockStack>
 
-        {toastMessage && (
-          <Toast content={toastMessage} onDismiss={() => setToastMessage('')} duration={2500} />
-        )}
-      </Page>
+      {toastMessage && (
+        <Toast content={toastMessage} onDismiss={() => setToastMessage('')} duration={2500} />
+      )}
+    </Page>
   );
 }

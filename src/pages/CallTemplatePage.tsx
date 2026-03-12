@@ -159,7 +159,7 @@ export default function CallTemplatePage() {
         title={editingTemplate ? 'Edit Template' : 'Add New Template'}
         primaryAction={{ content: 'Save', onAction: handleSave, loading: isSaving }}
         secondaryActions={[{ content: 'Cancel', onAction: () => setShowModal(false) }]}
-        large
+        size="large"
       >
         <Modal.Section>
           <FormLayout>

@@ -7,7 +7,6 @@ import {
   InlineStack,
   Button,
   TextField,
-  Badge,
   DataTable,
   Checkbox,
   Modal,
@@ -206,7 +205,7 @@ export default function ContactsPage() {
               </div>
               {selectedIds.length > 0 && (
                 <Button tone="critical" onClick={handleBulkDelete}>
-                  Delete ({selectedIds.length})
+{`Delete (${selectedIds.length})`}
                 </Button>
               )}
             </InlineStack>

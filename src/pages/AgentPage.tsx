@@ -38,6 +38,14 @@ const DEFAULT_FORM = {
   extraInformationToShare: '',
 };
 
+const AGENT_COLORS = [
+  { gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', light: '#eef2ff' },
+  { gradient: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)', light: '#ecfdf5' },
+  { gradient: 'linear-gradient(135deg, #fc5c7d 0%, #6a82fb 100%)', light: '#fef2f2' },
+  { gradient: 'linear-gradient(135deg, #f7971e 0%, #ffd200 100%)', light: '#fffbeb' },
+  { gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', light: '#eff6ff' },
+];
+
 export default function AgentPage() {
   const [agents, setAgents] = useState<AgentConfig[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -115,8 +123,10 @@ export default function AgentPage() {
       setToastError(false);
       setShowModal(false);
       load();
-    } catch {
-      setToastMsg('Failed to save agent');
+    } catch (e: unknown) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const msg = (e as any)?.response?.data?.message || 'Failed to save agent';
+      setToastMsg(msg);
       setToastError(true);
     } finally {
       setIsSaving(false);
@@ -147,7 +157,8 @@ export default function AgentPage() {
       setToastError(false);
       load();
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : 'Failed to toggle agent';
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const msg = (e as any)?.response?.data?.message || (e instanceof Error ? e.message : 'Failed to toggle agent');
       setToastMsg(msg);
       setToastError(true);
     }
@@ -157,85 +168,123 @@ export default function AgentPage() {
 
   return (
     <Page
-      title="Virtual AI Prompt"
-      subtitle="Manage your AI agents for inbound and outbound calls"
-      primaryAction={{ content: 'Create New Agent +', onAction: openCreate }}
+      title="Virtual AI Agents"
+      subtitle="Create and manage your AI-powered phone agents"
+      primaryAction={{ content: '+ Create Agent', onAction: openCreate }}
     >
       <BlockStack gap="500">
-        <InlineStack gap="200" blockAlign="center">
-          <Text as="h2" variant="headingMd">All AI Agents</Text>
-          <Text as="p" variant="bodySm" tone="subdued">— My Agent</Text>
-        </InlineStack>
-
         {isLoading ? (
           <Card><SkeletonBodyText lines={5} /></Card>
         ) : agents.length === 0 ? (
           <Card>
             <EmptyState
               heading="No AI agents yet"
-              action={{ content: 'Create New Agent', onAction: openCreate }}
+              action={{ content: 'Create Your First Agent', onAction: openCreate }}
               image=""
             >
-              <p>Create your first AI agent to start handling inbound or outbound calls.</p>
+              <p>Create an AI agent to start handling inbound or outbound calls automatically.</p>
             </EmptyState>
           </Card>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16 }}>
-            {agents.map((agent) => (
-              <Card key={agent._id}>
-                <BlockStack gap="300">
-                  <InlineStack align="space-between" blockAlign="start">
-                    <div style={{
-                      width: 44, height: 44, borderRadius: 10,
-                      background: agent.isActive ? '#d4edda' : '#f8d7da',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 22,
-                    }}>
-                      🤖
-                    </div>
-                    <Badge tone={agent.isActive ? 'success' : 'critical'}>
-                      {agent.isActive ? 'ACTIVE' : 'INACTIVE'}
-                    </Badge>
-                  </InlineStack>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 20 }}>
+            {agents.map((agent, idx) => {
+              const colorSet = AGENT_COLORS[idx % AGENT_COLORS.length];
+              return (
+                <div key={agent._id} style={{
+                  background: '#fff',
+                  borderRadius: 16,
+                  border: '1px solid #e5e7eb',
+                  overflow: 'hidden',
+                  transition: 'box-shadow 0.2s',
+                }}>
+                  {/* Color header bar */}
+                  <div style={{
+                    height: 6,
+                    background: colorSet.gradient,
+                  }} />
 
-                  <Text as="h3" variant="headingSm" fontWeight="bold">{agent.agentName}</Text>
-                  <Badge tone="info">{agent.callType.toUpperCase()}</Badge>
+                  <div style={{ padding: '20px' }}>
+                    <BlockStack gap="400">
+                      <InlineStack align="space-between" blockAlign="center">
+                        <InlineStack gap="300" blockAlign="center">
+                          <div style={{
+                            width: 48,
+                            height: 48,
+                            borderRadius: 12,
+                            background: colorSet.light,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: 24,
+                          }}>
+                            🤖
+                          </div>
+                          <BlockStack gap="050">
+                            <Text as="h3" variant="headingSm" fontWeight="bold">{agent.agentName}</Text>
+                            <Badge tone={agent.callType === 'inbound' ? 'info' : 'attention'}>
+                              {agent.callType.toUpperCase()}
+                            </Badge>
+                          </BlockStack>
+                        </InlineStack>
+                        <div style={{
+                          width: 10,
+                          height: 10,
+                          borderRadius: '50%',
+                          background: agent.isActive ? '#22c55e' : '#ef4444',
+                          boxShadow: agent.isActive ? '0 0 8px rgba(34,197,94,0.4)' : '0 0 8px rgba(239,68,68,0.3)',
+                        }} />
+                      </InlineStack>
 
-                  <Text as="p" variant="bodySm" tone="subdued">
-                    {agent.greetingMessage.slice(0, 90)}{agent.greetingMessage.length > 90 ? '...' : ''}
-                  </Text>
+                      <Text as="p" variant="bodySm" tone="subdued">
+                        {agent.greetingMessage.slice(0, 100)}{agent.greetingMessage.length > 100 ? '...' : ''}
+                      </Text>
 
-                  <Divider />
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', textAlign: 'center' }}>
-                    <BlockStack gap="050" align="center">
-                      <Text as="p" variant="headingSm">0</Text>
-                      <Text as="p" variant="bodySm" tone="subdued">Requests</Text>
-                    </BlockStack>
-                    <BlockStack gap="050" align="center">
-                      <Text as="p" variant="headingSm">0s</Text>
-                      <Text as="p" variant="bodySm" tone="subdued">Duration</Text>
-                    </BlockStack>
-                    <BlockStack gap="050" align="center">
-                      <Text as="p" variant="headingSm">0</Text>
-                      <Text as="p" variant="bodySm" tone="subdued">Success</Text>
+                      <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: '1fr 1fr 1fr',
+                        gap: 8,
+                        background: '#f9fafb',
+                        borderRadius: 10,
+                        padding: '12px 8px',
+                        textAlign: 'center',
+                      }}>
+                        <BlockStack gap="050" align="center">
+                          <Text as="p" variant="headingSm" fontWeight="bold">0</Text>
+                          <Text as="p" variant="bodySm" tone="subdued">Requests</Text>
+                        </BlockStack>
+                        <div style={{ borderLeft: '1px solid #e5e7eb', borderRight: '1px solid #e5e7eb' }}>
+                          <BlockStack gap="050" align="center">
+                            <Text as="p" variant="headingSm" fontWeight="bold">0s</Text>
+                            <Text as="p" variant="bodySm" tone="subdued">Duration</Text>
+                          </BlockStack>
+                        </div>
+                        <BlockStack gap="050" align="center">
+                          <Text as="p" variant="headingSm" fontWeight="bold">0</Text>
+                          <Text as="p" variant="bodySm" tone="subdued">Success</Text>
+                        </BlockStack>
+                      </div>
+
+                      <InlineStack gap="200">
+                        <div style={{ flex: 1 }}>
+                          <Button size="slim" onClick={() => openEdit(agent)} fullWidth>Edit</Button>
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <Button
+                            size="slim"
+                            variant={agent.isActive ? 'secondary' : 'primary'}
+                            onClick={() => handleToggleActive(agent)}
+                            fullWidth
+                          >
+                            {agent.isActive ? 'Deactivate' : 'Activate'}
+                          </Button>
+                        </div>
+                        <Button size="slim" tone="critical" onClick={() => handleDelete(agent._id)}>Delete</Button>
+                      </InlineStack>
                     </BlockStack>
                   </div>
-
-                  <Divider />
-                  <InlineStack gap="200">
-                    <Button size="slim" onClick={() => openEdit(agent)}>Edit</Button>
-                    <Button
-                      size="slim"
-                      tone={agent.isActive ? 'critical' : 'success'}
-                      onClick={() => handleToggleActive(agent)}
-                    >
-                      {agent.isActive ? 'Deactivate' : 'Activate'}
-                    </Button>
-                    <Button size="slim" tone="critical" onClick={() => handleDelete(agent._id)}>Delete</Button>
-                  </InlineStack>
-                </BlockStack>
-              </Card>
-            ))}
+                </div>
+              );
+            })}
           </div>
         )}
       </BlockStack>
@@ -246,7 +295,7 @@ export default function AgentPage() {
         title={editingAgent ? `Edit: ${editingAgent.agentName}` : 'Create New Agent'}
         primaryAction={{ content: 'Save', onAction: handleSave, loading: isSaving }}
         secondaryActions={[{ content: 'Cancel', onAction: () => setShowModal(false) }]}
-        large
+        size="large"
       >
         <Modal.Section>
           <FormLayout>
@@ -256,7 +305,7 @@ export default function AgentPage() {
                 value={form.agentName}
                 onChange={(v) => setForm({ ...form, agentName: v })}
                 autoComplete="off"
-                placeholder="e.g. DR-APPOINTMENT-BOT"
+                placeholder="e.g. Sales Assistant"
               />
               <Select
                 label="Call Type"
@@ -327,8 +376,8 @@ export default function AgentPage() {
             </FormLayout.Group>
 
             <FormLayout.Group>
-              <TextField label="Your Phone Number (BYON)" value={form.byonPhoneNumber} onChange={(v) => setForm({ ...form, byonPhoneNumber: v })} autoComplete="tel" placeholder="+8809649364251" />
-              <TextField label="Human Handoff Number" value={form.humanHandoffNumber} onChange={(v) => setForm({ ...form, humanHandoffNumber: v })} autoComplete="tel" placeholder="+8801234567890" />
+              <TextField label="Your Phone Number (BYON)" value={form.byonPhoneNumber} onChange={(v) => setForm({ ...form, byonPhoneNumber: v })} autoComplete="tel" placeholder="+1234567890" />
+              <TextField label="Human Handoff Number" value={form.humanHandoffNumber} onChange={(v) => setForm({ ...form, humanHandoffNumber: v })} autoComplete="tel" placeholder="+1234567890" />
             </FormLayout.Group>
 
             {!form.agentName.trim() && (

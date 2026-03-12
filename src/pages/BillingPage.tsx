@@ -43,6 +43,12 @@ const PLAN_FEATURES: Record<string, string[]> = {
   ],
 };
 
+const PLAN_COLORS: Record<string, { gradient: string; badge: string }> = {
+  basic: { gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', badge: '#667eea' },
+  advanced: { gradient: 'linear-gradient(135deg, #f7971e 0%, #ffd200 100%)', badge: '#f7971e' },
+  pro: { gradient: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)', badge: '#11998e' },
+};
+
 export default function BillingPage() {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
@@ -76,114 +82,192 @@ export default function BillingPage() {
   if (isLoading) return <Page title="Subscription"><Card><Text as="p">Loading...</Text></Card></Page>;
 
   return (
-    <Page title="Subscription Management" subtitle="Choose the plan that fits your store">
-        <BlockStack gap="500">
-          {/* Current usage */}
-          {subscription && (
-            <Card>
-              <BlockStack gap="400">
-                <InlineStack align="space-between">
-                  <Text as="h2" variant="headingMd">Current Plan</Text>
-                  <InlineStack gap="200">
-                    <Badge tone={subscription.status === 'active' ? 'success' : 'attention'}>
-                      {subscription.status}
-                    </Badge>
-                    <Badge>{subscription.planName.toUpperCase()}</Badge>
-                  </InlineStack>
+    <Page title="Subscription" subtitle="Choose the plan that fits your business">
+      <BlockStack gap="600">
+        {/* Current usage card */}
+        {subscription && (
+          <Card>
+            <BlockStack gap="400">
+              <InlineStack align="space-between" blockAlign="center">
+                <InlineStack gap="300" blockAlign="center">
+                  <div style={{
+                    width: 44,
+                    height: 44,
+                    borderRadius: 12,
+                    background: PLAN_COLORS[subscription.planName]?.gradient || PLAN_COLORS.basic.gradient,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#fff',
+                    fontWeight: 700,
+                    fontSize: 18,
+                  }}>
+                    {subscription.planName.charAt(0).toUpperCase()}
+                  </div>
+                  <BlockStack gap="050">
+                    <Text as="h2" variant="headingMd" fontWeight="bold">Current Plan</Text>
+                    <Text as="p" variant="bodySm" tone="subdued">{subscription.planName.charAt(0).toUpperCase() + subscription.planName.slice(1)} Plan</Text>
+                  </BlockStack>
                 </InlineStack>
-                <Divider />
-                <BlockStack gap="200">
-                  <InlineStack align="space-between">
-                    <Text as="p" variant="bodySm">Minutes Used</Text>
-                    <Text as="p" variant="bodySm">
-                      {subscription.minutesUsed} / {subscription.minutesIncluded} min
-                    </Text>
-                  </InlineStack>
-                  <ProgressBar progress={minutesPercent} tone={minutesPercent > 90 ? 'critical' : 'success'} />
-                  {subscription.overageMinutes > 0 && (
-                    <Banner tone="warning" title="Overage Usage">
-                      <p>
-                        {subscription.overageMinutes} overage minutes — additional charge of $
-                        {subscription.overageCost.toFixed(2)}
-                      </p>
-                    </Banner>
-                  )}
-                </BlockStack>
-                <InlineStack gap="400">
-                  <Text as="p" variant="bodySm" tone="subdued">
-                    Simultaneous calls: <strong>{subscription.simultaneousCalls}</strong>
-                  </Text>
-                  <Text as="p" variant="bodySm" tone="subdued">
-                    Recording: <strong>{subscription.hasCallRecording ? 'Enabled' : 'Not included'}</strong>
-                  </Text>
-                  <Text as="p" variant="bodySm" tone="subdued">
-                    Advanced Analytics: <strong>{subscription.hasAdvancedAnalytics ? 'Enabled' : 'Not included'}</strong>
-                  </Text>
-                </InlineStack>
-              </BlockStack>
-            </Card>
-          )}
+                <Badge tone={subscription.status === 'active' ? 'success' : 'attention'}>
+                  {subscription.status.toUpperCase()}
+                </Badge>
+              </InlineStack>
 
-          {/* Plan cards */}
-          <Layout>
-            {plans.map((plan) => {
-              const isCurrent = subscription?.planName === plan.name && subscription?.status === 'active';
-              return (
-                <Layout.Section key={plan.name} variant="oneThird">
-                  <Card>
-                    <BlockStack gap="400">
-                      <InlineStack align="space-between">
-                        <Text as="h2" variant="headingMd">{plan.displayName}</Text>
-                        {isCurrent && <Badge tone="success">Current Plan</Badge>}
-                      </InlineStack>
+              <Divider />
+
+              <BlockStack gap="200">
+                <InlineStack align="space-between">
+                  <Text as="p" variant="bodySm" fontWeight="medium">Minutes Used</Text>
+                  <Text as="p" variant="bodySm" fontWeight="bold">
+                    {subscription.minutesUsed} / {subscription.minutesIncluded} min
+                  </Text>
+                </InlineStack>
+                <ProgressBar progress={minutesPercent} tone={minutesPercent > 90 ? 'critical' : minutesPercent > 70 ? 'highlight' : 'success'} size="small" />
+              </BlockStack>
+
+              {subscription.overageMinutes > 0 && (
+                <Banner tone="warning" title="Overage Usage">
+                  <p>{subscription.overageMinutes} overage minutes — additional charge of ${subscription.overageCost.toFixed(2)}</p>
+                </Banner>
+              )}
+
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, 1fr)',
+                gap: 12,
+                background: '#f9fafb',
+                borderRadius: 10,
+                padding: '14px',
+              }}>
+                <BlockStack gap="050" align="center">
+                  <Text as="p" variant="headingSm" fontWeight="bold">{subscription.simultaneousCalls}</Text>
+                  <Text as="p" variant="bodySm" tone="subdued">Simultaneous</Text>
+                </BlockStack>
+                <BlockStack gap="050" align="center">
+                  <Text as="p" variant="headingSm" fontWeight="bold">{subscription.hasCallRecording ? 'Yes' : 'No'}</Text>
+                  <Text as="p" variant="bodySm" tone="subdued">Recording</Text>
+                </BlockStack>
+                <BlockStack gap="050" align="center">
+                  <Text as="p" variant="headingSm" fontWeight="bold">{subscription.hasAdvancedAnalytics ? 'Yes' : 'No'}</Text>
+                  <Text as="p" variant="bodySm" tone="subdued">Analytics</Text>
+                </BlockStack>
+              </div>
+            </BlockStack>
+          </Card>
+        )}
+
+        {/* Plan cards */}
+        <Layout>
+          {plans.map((plan) => {
+            const isCurrent = subscription?.planName === plan.name && subscription?.status === 'active';
+            const colors = PLAN_COLORS[plan.name] || PLAN_COLORS.basic;
+            const isPopular = plan.name === 'advanced';
+
+            return (
+              <Layout.Section key={plan.name} variant="oneThird">
+                <div style={{
+                  background: '#fff',
+                  borderRadius: 16,
+                  border: isCurrent ? `2px solid ${colors.badge}` : '1px solid #e5e7eb',
+                  overflow: 'hidden',
+                  position: 'relative',
+                }}>
+                  {isPopular && (
+                    <div style={{
+                      position: 'absolute',
+                      top: 12,
+                      right: -28,
+                      background: '#f7971e',
+                      color: '#fff',
+                      fontSize: 10,
+                      fontWeight: 700,
+                      padding: '4px 32px',
+                      transform: 'rotate(45deg)',
+                      letterSpacing: 0.5,
+                    }}>
+                      POPULAR
+                    </div>
+                  )}
+
+                  {/* Header */}
+                  <div style={{
+                    background: colors.gradient,
+                    padding: '24px 20px',
+                    color: '#fff',
+                  }}>
+                    <BlockStack gap="200">
+                      <Text as="h2" variant="headingMd" fontWeight="bold">
+                        <span style={{ color: '#fff' }}>{plan.displayName}</span>
+                      </Text>
                       <InlineStack gap="100" blockAlign="end">
                         <Text as="p" variant="heading2xl" fontWeight="bold">
-                          ${plan.priceMonthly}
+                          <span style={{ color: '#fff' }}>${plan.priceMonthly}</span>
                         </Text>
-                        <Text as="p" variant="bodySm" tone="subdued">/month</Text>
+                        <Text as="p" variant="bodySm">
+                          <span style={{ color: 'rgba(255,255,255,0.8)' }}>/month</span>
+                        </Text>
                       </InlineStack>
-                      <Divider />
+                    </BlockStack>
+                  </div>
+
+                  {/* Features */}
+                  <div style={{ padding: '20px' }}>
+                    <BlockStack gap="400">
                       <List>
                         {(PLAN_FEATURES[plan.name] || []).map((feature) => (
                           <List.Item key={feature}>{feature}</List.Item>
                         ))}
                       </List>
+
                       <Text as="p" variant="bodySm" tone="subdued">
                         Overage: ${plan.overageRatePerMinute.toFixed(2)}/min
                       </Text>
+
                       <Button
                         variant={isCurrent ? 'secondary' : 'primary'}
                         disabled={isCurrent}
                         loading={subscribing === plan.name}
                         onClick={() => handleSubscribe(plan.name)}
                         fullWidth
+                        size="large"
                       >
                         {isCurrent ? 'Current Plan' : `Upgrade to ${plan.displayName}`}
                       </Button>
                     </BlockStack>
-                  </Card>
-                </Layout.Section>
-              );
-            })}
-          </Layout>
+                  </div>
+                </div>
+              </Layout.Section>
+            );
+          })}
+        </Layout>
 
-          <Card>
-            <BlockStack gap="200">
-              <Text as="h2" variant="headingMd">Billing Notes</Text>
-              <List>
-                <List.Item>All plans include a 7-day free trial</List.Item>
-                <List.Item>Billing is handled securely through Shopify Billing</List.Item>
-                <List.Item>Overage minutes are billed at the end of each billing cycle</List.Item>
-                <List.Item>You can upgrade or downgrade at any time</List.Item>
-                <List.Item>Cancel anytime — no long-term contracts</List.Item>
-              </List>
-            </BlockStack>
-          </Card>
-        </BlockStack>
+        {/* Billing notes */}
+        <Card>
+          <BlockStack gap="300">
+            <Text as="h2" variant="headingMd" fontWeight="semibold">Billing Information</Text>
+            <Divider />
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
+              {[
+                { icon: '🎁', text: '7-day free trial on all plans' },
+                { icon: '🔒', text: 'Secure billing via Shopify' },
+                { icon: '📊', text: 'Overage billed at cycle end' },
+                { icon: '🔄', text: 'Upgrade or downgrade anytime' },
+                { icon: '❌', text: 'No long-term contracts' },
+              ].map((note) => (
+                <InlineStack key={note.text} gap="200" blockAlign="start">
+                  <span style={{ fontSize: 18 }}>{note.icon}</span>
+                  <Text as="p" variant="bodySm" tone="subdued">{note.text}</Text>
+                </InlineStack>
+              ))}
+            </div>
+          </BlockStack>
+        </Card>
+      </BlockStack>
 
-        {toastMessage && (
-          <Toast content={toastMessage} error onDismiss={() => setToastMessage('')} duration={3000} />
-        )}
-      </Page>
+      {toastMessage && (
+        <Toast content={toastMessage} error onDismiss={() => setToastMessage('')} duration={3000} />
+      )}
+    </Page>
   );
 }

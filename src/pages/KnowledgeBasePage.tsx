@@ -260,7 +260,7 @@ export default function KnowledgeBasePage() {
         title="Add Document"
         primaryAction={{ content: 'Add', onAction: handleAddDocument, loading: isSavingDoc }}
         secondaryActions={[{ content: 'Cancel', onAction: () => setShowDocModal(false) }]}
-        large
+        size="large"
       >
         <Modal.Section>
           <FormLayout>
