@@ -14,8 +14,8 @@ export interface SipTrunk {
   sipRealm?: string;
   callerIdNumber: string;
   callerIdName?: string;
-  jambonzCarrierSid?: string;
-  jambonzGatewaySid?: string;
+  voiceNimbleCarrierSid?: string;
+  voiceNimbleGatewaySid?: string;
   isActive: boolean;
   isDefault: boolean;
   lastTestedAt?: string;

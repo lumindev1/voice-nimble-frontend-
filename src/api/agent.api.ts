@@ -8,6 +8,8 @@ export interface AgentConfig {
   voiceGender: 'male' | 'female' | 'neutral';
   voiceId: string;
   voiceSpeed: number;
+  ttsVendor: 'google' | 'elevenlabs';
+  sttVendor: 'google';
   phoneNumber?: string;
   phoneNumberSid?: string;
   bringYourOwnNumber: boolean;

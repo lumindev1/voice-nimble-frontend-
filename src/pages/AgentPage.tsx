@@ -29,6 +29,7 @@ const DEFAULT_FORM = {
   voiceGender: 'female' as 'male' | 'female' | 'neutral',
   voiceId: 'en-US-Standard-F',
   voiceSpeed: 1.0,
+  ttsVendor: 'google' as 'google' | 'elevenlabs',
   legalBusinessName: '',
   businessDomain: '',
   bringYourOwnNumber: false,
@@ -94,6 +95,7 @@ export default function AgentPage() {
       voiceGender: a.voiceGender,
       voiceId: a.voiceId,
       voiceSpeed: a.voiceSpeed,
+      ttsVendor: a.ttsVendor || 'google',
       legalBusinessName: a.legalBusinessName,
       businessDomain: a.businessDomain,
       bringYourOwnNumber: a.bringYourOwnNumber,
@@ -164,7 +166,28 @@ export default function AgentPage() {
     }
   };
 
-  const voiceOptions = voices.map((v) => ({ label: `${v.name} (${v.language}, ${v.gender})`, value: v.id }));
+  const ELEVENLABS_VOICES = [
+    { label: 'Sarah (Female, en-US)', value: 'EXAVITQu4vr4xnSDxMaL' },
+    { label: 'Laura (Female, en-US)', value: 'FGY2WhTYpPnrIDTdsKH5' },
+    { label: 'Charlie (Male, en-US)', value: 'IKne3meq5aSn9XLyUdCD' },
+    { label: 'George (Male, en-GB)', value: 'JBFqnCBsd6RMkjVDRZzb' },
+    { label: 'Callum (Male, en-US)', value: 'N2lVS1w4EtoT3dr4eOWO' },
+    { label: 'Charlotte (Female, en-US)', value: 'XB0fDUnXU5powFXDhCwa' },
+    { label: 'Alice (Female, en-US)', value: 'Xb7hH8MSUJpSbSDYk0k2' },
+    { label: 'Matilda (Female, en-US)', value: 'XrExE9yKIg1WjnnlVkGX' },
+    { label: 'Will (Male, en-US)', value: 'bIHbv24MWmeRgasZH58o' },
+    { label: 'Jessica (Female, en-US)', value: 'cgSgspJ2msm6clMCkdW9' },
+    { label: 'Eric (Male, en-US)', value: 'cjVigY5qzO86Huf0OWal' },
+    { label: 'Chris (Male, en-US)', value: 'iP95p4xoKVk53GoZ742B' },
+    { label: 'Brian (Male, en-US)', value: 'nPczCjzI2devNBz1zQrb' },
+    { label: 'Daniel (Male, en-GB)', value: 'onwK4e9ZLuTAKqWW03F9' },
+    { label: 'Lily (Female, en-GB)', value: 'pFZP5JQG7iQjIQuC4Bku' },
+  ];
+
+  const googleVoiceOptions = voices.map((v) => ({ label: `${v.name} (${v.language}, ${v.gender})`, value: v.id }));
+  const voiceOptions = form.ttsVendor === 'elevenlabs'
+    ? ELEVENLABS_VOICES
+    : (googleVoiceOptions.length > 0 ? googleVoiceOptions : [{ label: 'Default (Jenny, en-US)', value: 'en-US-JennyNeural' }]);
 
   return (
     <Page
@@ -360,12 +383,26 @@ export default function AgentPage() {
                 onChange={(v) => setForm({ ...form, primaryLanguage: v })}
               />
               <Select
-                label="Voice"
-                options={voiceOptions.length > 0 ? voiceOptions : [{ label: 'Default (Jenny, en-US)', value: 'en-US-JennyNeural' }]}
-                value={form.voiceId}
-                onChange={(v) => setForm({ ...form, voiceId: v })}
+                label="TTS Provider"
+                options={[
+                  { label: 'Google', value: 'google' },
+                  { label: 'ElevenLabs', value: 'elevenlabs' },
+                ]}
+                value={form.ttsVendor}
+                onChange={(v) => {
+                  const vendor = v as 'google' | 'elevenlabs';
+                  const defaultVoice = vendor === 'elevenlabs' ? 'EXAVITQu4vr4xnSDxMaL' : 'en-US-Standard-F';
+                  setForm({ ...form, ttsVendor: vendor, voiceId: defaultVoice });
+                }}
               />
             </FormLayout.Group>
+
+            <Select
+              label="Voice"
+              options={voiceOptions}
+              value={form.voiceId}
+              onChange={(v) => setForm({ ...form, voiceId: v })}
+            />
 
             <Divider />
             <Text as="h3" variant="headingSm">Business Info</Text>

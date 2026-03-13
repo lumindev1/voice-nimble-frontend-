@@ -23,12 +23,12 @@ const FAQ_ITEMS = [
     a: 'Voice Nimble connects to your Shopify store through the official Shopify Admin API. When a customer calls and asks about an order, the AI can look up order status, products, and policies in real time. Sensitive data is never stored — it\'s fetched fresh for each conversation.',
   },
   {
-    q: 'What is a Jambonz and why does Voice Nimble use it?',
-    a: 'Jambonz is an open-source programmable voice platform (similar to Twilio) that handles the telephony infrastructure. It routes phone calls to Voice Nimble, manages call recording, transcriptions, and call transfers. Voice Nimble uses Jambonz to provide enterprise-grade telephony without vendor lock-in.',
+    q: 'How does Voice Nimble handle telephony?',
+    a: 'Voice Nimble uses an open-source programmable voice platform (similar to Twilio) that handles the telephony infrastructure. It routes phone calls to Voice Nimble, manages call recording, transcriptions, and call transfers — providing enterprise-grade telephony without vendor lock-in.',
   },
   {
     q: 'Can I use my existing business phone number?',
-    a: 'Yes! Voice Nimble supports "Bring Your Own Number" (BYON). You can configure your existing SIP-compatible phone number in the Agent settings. Alternatively, we can provision a new number for you through Jambonz.',
+    a: 'Yes! Voice Nimble supports "Bring Your Own Number" (BYON). You can configure your existing SIP-compatible phone number in the Agent settings. Alternatively, we can provision a new number for you through Voice Nimble.',
   },
   {
     q: 'How is call recording handled?',
