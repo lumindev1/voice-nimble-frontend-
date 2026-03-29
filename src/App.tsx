@@ -20,6 +20,7 @@ import BroadcastCallsPage from './pages/BroadcastCallsPage';
 import EventDrivenCallPage from './pages/EventDrivenCallPage';
 import TestCallPage from './pages/TestCallPage';
 import SipTrunkPage from './pages/SipTrunkPage';
+import PhoneProviderPage from './pages/PhoneProviderPage';
 import LoadingScreen from './components/LoadingScreen';
 
 function getShopifyConfig() {
@@ -74,6 +75,7 @@ function AuthenticatedRoutes() {
 
         {/* Settings */}
         <Route path="/sip-trunks" element={<SipTrunkPage />} />
+        <Route path="/phone-providers" element={<PhoneProviderPage />} />
         <Route path="/analytics" element={<AnalyticsPage />} />
         <Route path="/skills" element={<SkillsPage />} />
         <Route path="/billing" element={<BillingPage />} />

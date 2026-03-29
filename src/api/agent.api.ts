@@ -35,6 +35,7 @@ export interface AgentVoice {
   name: string;
   language: string;
   gender: string;
+  vendor?: string;
 }
 
 export const agentApi = {

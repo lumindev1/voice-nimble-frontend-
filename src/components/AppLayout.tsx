@@ -147,6 +147,12 @@ export default function AppLayout({ children }: AppLayoutProps) {
             onClick: () => navigate('/sip-trunks'),
           },
           {
+            label: 'Phone Providers',
+            icon: PhoneIcon,
+            selected: isSelected('/phone-providers'),
+            onClick: () => navigate('/phone-providers'),
+          },
+          {
             label: 'Agent Skills',
             icon: AppsIcon,
             selected: isSelected('/skills'),
